@@ -1,48 +1,52 @@
-use rand::Rng;
-use std::{
-    cmp::Ordering,
-    io::{self, Write},
-};
-
-fn get_user_input() -> u32 {
-    // Print a prompt for the user
-    print!("Please enter a number: ");
-    // Ensure the prompt is displayed immediately
-    io::stdout().flush().unwrap();
-
-    // Create a mutable String to store the user input
-    let mut input = String::new();
-
-    // Read the input from the standard input (stdin)
-    io::stdin()
-        .read_line(&mut input)
-        .expect("Failed to read line");
-
-    // Trim the input to remove any extra whitespace and convert it to an integer
-    let number: u32 = input.trim().parse().expect("Please type a number!");
-    println!("You entered: {}", number);
-    number
+fn main() {
+    println!("hej");
 }
 
-fn main() {
-    let mut rng = rand::thread_rng();
-    let random_number: u32 = rng.gen_range(1..101);
-
-    let mut found_it = false;
-
-    while !found_it {
-        let guess = get_user_input();
-        match guess.cmp(&random_number) {
-            Ordering::Equal => {
-                found_it = true;
-                println!("Yes, the number was {}", random_number);
-            }
-            Ordering::Less => {
-                println!("Higher!");
-            }
-            Ordering::Greater => {
-                println!("Lower!");
-            }
+#[allow(dead_code)]
+fn calculate_sum_from_string(input: String) -> i32 {
+    if !input.is_empty() {
+        let mut sum: i32 = 0;
+        let number_strings = input.split(',');
+        for number_string in number_strings {
+            let number: i32 = number_string.trim().parse().expect("Should be a number");
+            sum += number;
         }
+        return sum;
+    }
+    0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn when_empty_string_return_zero() {
+        assert_eq!(calculate_sum_from_string(String::from("")), 0)
+    }
+
+    #[test]
+    fn when_one_digit_should_return_that_number() {
+        assert_eq!(calculate_sum_from_string(String::from("1")), 1);
+    }
+
+    #[test]
+    fn when_spaces_around_digit_should_return_that_number() {
+        assert_eq!(calculate_sum_from_string(String::from(" 1 ")), 1);
+    }
+
+    #[test]
+    fn when_two_digits_comma_separated_should_return_sum() {
+        assert_eq!(calculate_sum_from_string(String::from("1,2")), 3);
+    }
+
+    #[test]
+    fn when_spaces_around_two_digits_should_return_sum() {
+        assert_eq!(calculate_sum_from_string(String::from(" 1,2 ")), 3);
+    }
+
+    #[test]
+    fn when_two_multi_digit_numbers_should_return_sum() {
+        assert_eq!(calculate_sum_from_string(String::from("11,22")), 33);
     }
 }
